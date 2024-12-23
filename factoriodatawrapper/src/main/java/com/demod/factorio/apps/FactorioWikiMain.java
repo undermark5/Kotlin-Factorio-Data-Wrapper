@@ -83,40 +83,40 @@ public class FactorioWikiMain {
 		}
 	}
 
-	public static final Map<String, Integer> wiki_ScienceOrdering = new LinkedHashMap<>();
+	public static final Map<String, Integer> scienceOrdering = new LinkedHashMap<>();
 
 	static {
-		wiki_ScienceOrdering.put("automation-science-pack", 1);
-		wiki_ScienceOrdering.put("logistic-science-pack", 2);
-		wiki_ScienceOrdering.put("military-science-pack", 3);
-		wiki_ScienceOrdering.put("chemical-science-pack", 4);
-		wiki_ScienceOrdering.put("production-science-pack", 5);
-		wiki_ScienceOrdering.put("utility-science-pack", 6);
-		wiki_ScienceOrdering.put("space-science-pack", 7);
-		wiki_ScienceOrdering.put("metallurgic-science-pack", 8);
-		wiki_ScienceOrdering.put("electromagnetic-science-pack", 9);
-		wiki_ScienceOrdering.put("agricultural-science-pack", 10);
-		wiki_ScienceOrdering.put("cryogenic-science-pack", 11);
-		wiki_ScienceOrdering.put("promethium-science-pack", 12);
+		scienceOrdering.put("automation-science-pack", 1);
+		scienceOrdering.put("logistic-science-pack", 2);
+		scienceOrdering.put("military-science-pack", 3);
+		scienceOrdering.put("chemical-science-pack", 4);
+		scienceOrdering.put("production-science-pack", 5);
+		scienceOrdering.put("utility-science-pack", 6);
+		scienceOrdering.put("space-science-pack", 7);
+		scienceOrdering.put("metallurgic-science-pack", 8);
+		scienceOrdering.put("electromagnetic-science-pack", 9);
+		scienceOrdering.put("agricultural-science-pack", 10);
+		scienceOrdering.put("cryogenic-science-pack", 11);
+		scienceOrdering.put("promethium-science-pack", 12);
 	}
 
-	private static Map<String, Function<Double, String>> wiki_EffectModifierFormatter = new LinkedHashMap<>();
+	private static Map<String, Function<Double, String>> effectModifierFormatter = new LinkedHashMap<>();
 	static {
-		Function<Double, String> fmtCount = v -> wiki_fmtDouble(v);
+		Function<Double, String> fmtCount = FactorioWikiMain::fmtDouble;
 		Function<Double, String> fmtPercent = v -> String.format("%.0f%%", v * 100);
-		Function<Double, String> fmtSlot = v -> "+" + wiki_fmtDouble(v) + " slots";
+		Function<Double, String> fmtSlot = v -> "+" + fmtDouble(v) + " slots";
 
-		wiki_EffectModifierFormatter.put("ammo-damage", fmtPercent);
-		wiki_EffectModifierFormatter.put("character-logistic-slots", fmtSlot);
-		wiki_EffectModifierFormatter.put("character-logistic-trash-slots", fmtSlot);
-		wiki_EffectModifierFormatter.put("gun-speed", fmtPercent);
-		wiki_EffectModifierFormatter.put("laboratory-speed", fmtPercent);
-		wiki_EffectModifierFormatter.put("maximum-following-robots-count", fmtCount);
-		wiki_EffectModifierFormatter.put("mining-drill-productivity-bonus", fmtPercent);
-		wiki_EffectModifierFormatter.put("train-braking-force-bonus", fmtPercent);
-		wiki_EffectModifierFormatter.put("turret-attack", fmtPercent);
-		wiki_EffectModifierFormatter.put("worker-robot-speed", fmtPercent);
-		wiki_EffectModifierFormatter.put("worker-robot-storage", fmtCount);
+		effectModifierFormatter.put("ammo-damage", fmtPercent);
+		effectModifierFormatter.put("character-logistic-slots", fmtSlot);
+		effectModifierFormatter.put("character-logistic-trash-slots", fmtSlot);
+		effectModifierFormatter.put("gun-speed", fmtPercent);
+		effectModifierFormatter.put("laboratory-speed", fmtPercent);
+		effectModifierFormatter.put("maximum-following-robots-count", fmtCount);
+		effectModifierFormatter.put("mining-drill-productivity-bonus", fmtPercent);
+		effectModifierFormatter.put("train-braking-force-bonus", fmtPercent);
+		effectModifierFormatter.put("turret-attack", fmtPercent);
+		effectModifierFormatter.put("worker-robot-speed", fmtPercent);
+		effectModifierFormatter.put("worker-robot-storage", fmtCount);
 	}
 
 	private static ModInfo baseInfo;
@@ -159,19 +159,19 @@ public class FactorioWikiMain {
 
 		Map<String, WikiTypeMatch> wikiTypes = generateWikiTypes(table);
 
-		write(wiki_Technologies(table), "wiki-technologies");
+		write(technologies(table), "wiki-technologies");
 		// write(wiki_FormulaTechnologies(table), "wiki-formula-technologies");
-		write(wiki_Recipes(table), "wiki-recipes");
-		write(wiki_Types(table, wikiTypes), "wiki-types");
-		write(wiki_Items(table), "wiki-items");
+		write(recipes(table), "wiki-recipes");
+		write(types(table, wikiTypes), "wiki-types");
+		write(items(table), "wiki-items");
 		// write(wiki_TypeTree(table), "wiki-type-tree");
-		write(wiki_Entities(table, wikiTypes), "wiki-entities");
-		write(wiki_DataRawTree(table), "data-raw-tree");
+		write(entities(table, wikiTypes), "wiki-entities");
+		write(dataRawTree(table), "data-raw-tree");
 
 		// Output icons outside of versions because these are a lot of icons and they
 		// dont change so often. No need to spam the repository with them.
 		File icons = new File(outputPath, "icons");
-		wiki_GenerateIcons(table, icons, new File(icons, "technology"));
+		generateIcons(table, icons, new File(icons, "technology"));
 
 		Desktop.getDesktop().open(folder);
 	}
@@ -187,7 +187,7 @@ public class FactorioWikiMain {
 		return Collectors.collectingAndThen(Collectors.toList(), JSONArray::new);
 	}
 
-	private static JSONObject wiki_DataRawTree(DataTable table) {
+	private static JSONObject dataRawTree(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 
 		Multimap<String, String> leafs = LinkedHashMultimap.create();
@@ -207,7 +207,7 @@ public class FactorioWikiMain {
 		return json;
 	}
 
-	private static JSONObject wiki_Entities(DataTable table, Map<String, WikiTypeMatch> wikiTypes) {
+	private static JSONObject entities(DataTable table, Map<String, WikiTypeMatch> wikiTypes) {
 		JSONObject json = createOrderedJSONObject();
 
 		Optional<LuaValue> optUtilityConstantsLua = table.getRaw("utility-constants", "default");
@@ -306,7 +306,7 @@ public class FactorioWikiMain {
 		return json;
 	}
 
-	public static String wiki_fmtDouble(double value) {
+	public static String fmtDouble(double value) {
 		if (value == (long) value) {
 			return String.format("%d", (long) value);
 		} else {
@@ -315,11 +315,11 @@ public class FactorioWikiMain {
 	}
 
 	/**
-	 * Same as {@link #wiki_fmtName(String, JSONObject)}, but adds a ", [number]"
+	 * Same as {@link #fmtName(String, JSONObject)}, but adds a ", [number]"
 	 * when there is a number as the last part of the name. This adds the number to
 	 * the icon.
 	 */
-	public static String wiki_fmtNumberedWikiName(String wikiName) {
+	public static String fmtNumberedWikiName(String wikiName) {
 		String[] split = wikiName.split("\\s+");
 		Integer num = Ints.tryParse(split[split.length - 1]);
 		if (num != null) {
@@ -329,7 +329,7 @@ public class FactorioWikiMain {
 	}
 
 	@SuppressWarnings("unused")
-	private static JSONObject wiki_FormulaTechnologies(DataTable table) {
+	private static JSONObject formulaTechnologies(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 		table.getTechnologies().values().stream().filter(t -> t.isBonus()).map(t -> t.getBonusName()).distinct()
 				.sorted().forEach(bonusName -> {
@@ -380,10 +380,10 @@ public class FactorioWikiMain {
 						// TODO convert markup to json
 						String markup = "| {{Icontech|" + table.getWikiTechnologyName(bonusName) + " (research)|" + i
 								+ "}} " + table.getWikiTechnologyName(bonusName) + " " + i + " || {{Icon|Time|"
-								+ wiki_fmtDouble(time) + "}} "
+								+ fmtDouble(time) + "}} "
 								+ ingredients.entrySet().stream()
-										.sorted((e1, e2) -> Integer.compare(wiki_ScienceOrdering.get(e1.getKey()),
-												wiki_ScienceOrdering.get(e2.getKey())))
+										.sorted((e1, e2) -> Integer.compare(scienceOrdering.get(e1.getKey()),
+												scienceOrdering.get(e2.getKey())))
 										.map(e -> "{{Icon|" + table.getWikiItemName(e.getKey()) + "|" + e.getValue()
 												+ "}}")
 										.collect(Collectors.joining(" "))
@@ -391,12 +391,12 @@ public class FactorioWikiMain {
 										: "")
 								+ " || "
 								+ effects.stream()
-										.map(e -> wiki_EffectModifierFormatter.getOrDefault(e.getType(), v -> "")
+										.map(e -> effectModifierFormatter.getOrDefault(e.getType(), v -> "")
 												.apply(e.getModifier()))
 										.filter(s -> !s.isEmpty()).distinct().collect(Collectors.joining(" "))
 								+ " || "
 								+ effectTypeSum.entrySet().stream()
-										.map(e -> wiki_EffectModifierFormatter
+										.map(e -> effectModifierFormatter
 												.getOrDefault(e.getKey().split("\\|")[0], v -> "").apply(e.getValue()))
 										.filter(s -> !s.isEmpty()).distinct().collect(Collectors.joining(" "));
 						itemJson.put(markup);
@@ -405,7 +405,7 @@ public class FactorioWikiMain {
 		return json;
 	}
 
-	private static void wiki_GenerateIcons(DataTable table, File folder, File techIconFolder) {
+	private static void generateIcons(DataTable table, File folder, File techIconFolder) {
 		folder.mkdirs();
 		techIconFolder.mkdirs();
 
@@ -447,7 +447,7 @@ public class FactorioWikiMain {
 		});
 	}
 
-	private static JSONObject wiki_Items(DataTable table) {
+	private static JSONObject items(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 
 		Multimap<String, String> requiredTechnologies = LinkedHashMultimap.create();
@@ -503,7 +503,7 @@ public class FactorioWikiMain {
 	 * @param table
 	 * @param mappingJson
 	 */
-	private static JSONObject wiki_Recipes(DataTable table) {
+	private static JSONObject recipes(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 
 		Map<String, RecipePrototype> normalRecipes = table.getRecipes();
@@ -582,7 +582,7 @@ public class FactorioWikiMain {
 	 * <br>
 	 * - Bilka
 	 */
-	private static JSONObject wiki_Technologies(DataTable table) {
+	private static JSONObject technologies(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 
 		Multimap<String, String> allowsMap = LinkedHashMultimap.create();
@@ -603,7 +603,7 @@ public class FactorioWikiMain {
 						JSONArray costJson = new JSONArray();
 						costJson.put(pair("Time", tech.getTime()));
 						tech.getIngredients().entrySet().stream().sorted((e1, e2) -> Integer
-								.compare(wiki_ScienceOrdering.get(e1.getKey()), wiki_ScienceOrdering.get(e2.getKey())))
+								.compare(scienceOrdering.get(e1.getKey()), scienceOrdering.get(e2.getKey())))
 								.forEach(entry -> {
 									costJson.put(pair(table.getWikiItemName(entry.getKey()), entry.getValue()));
 								});
@@ -640,7 +640,7 @@ public class FactorioWikiMain {
 					if (!tech.getPrerequisites().isEmpty()) {
 						itemJson.put("required-technologies",
 								tech.getPrerequisites().stream().sorted()
-										.map(n -> wiki_fmtNumberedWikiName(table.getWikiTechnologyName(n)))
+										.map(n -> fmtNumberedWikiName(table.getWikiTechnologyName(n)))
 										.collect(toJsonArray()));
 					}
 
@@ -649,7 +649,7 @@ public class FactorioWikiMain {
 						if (!allows.isEmpty()) {
 							itemJson.put("allows",
 									allows.stream().sorted()
-											.map(n -> wiki_fmtNumberedWikiName(table.getWikiTechnologyName(n)))
+											.map(n -> fmtNumberedWikiName(table.getWikiTechnologyName(n)))
 											.collect(toJsonArray()));
 						}
 					} else {
@@ -677,7 +677,7 @@ public class FactorioWikiMain {
 		return json;
 	}
 
-	private static JSONObject wiki_Types(DataTable table, Map<String, WikiTypeMatch> wikiTypes) {
+	private static JSONObject types(DataTable table, Map<String, WikiTypeMatch> wikiTypes) {
 		JSONObject json = createOrderedJSONObject();
 
 		wikiTypes.entrySet().stream().sorted((e1, e2) -> e1.getKey().compareTo(e2.getKey())).forEach(e -> {
@@ -702,7 +702,7 @@ public class FactorioWikiMain {
 	}
 
 	@SuppressWarnings("unused")
-	private static JSONObject wiki_TypeTree(DataTable table) {
+	private static JSONObject typeTree(DataTable table) {
 		JSONObject json = createOrderedJSONObject();
 
 		Multimap<String, String> links = LinkedHashMultimap.create();
@@ -729,21 +729,21 @@ public class FactorioWikiMain {
 
 		Collection<String> rootTypes = links.get("__ROOT__");
 		rootTypes.stream().sorted().forEach(n -> {
-			json.put(n, wiki_TypeTree_GenerateNode(links, leafs, n));
+			json.put(n, typeTreeGenerateNode(links, leafs, n));
 		});
 
 		return json;
 	}
 
-	private static JSONObject wiki_TypeTree_GenerateNode(Multimap<String, String> links, Multimap<String, String> leafs,
-			String parent) {
+	private static JSONObject typeTreeGenerateNode(Multimap<String, String> links, Multimap<String, String> leafs,
+												   String parent) {
 		Collection<String> types = links.get(parent);
 		Collection<String> names = leafs.get(parent);
 
 		JSONObject nodeJson = createOrderedJSONObject();
 		Streams.concat(types.stream(), names.stream()).sorted().forEach(n -> {
 			if (types.contains(n)) {
-				nodeJson.put(n, wiki_TypeTree_GenerateNode(links, leafs, n));
+				nodeJson.put(n, typeTreeGenerateNode(links, leafs, n));
 			} else {
 				nodeJson.put(n, new JSONObject());
 			}

@@ -17,7 +17,7 @@ import com.demod.factorio.prototype.RecipePrototype;
 
 public class FactorioJSONMain {
 
-	private static void json_Recipes(DataTable table, PrintWriter pw) {
+	private static void recipes(DataTable table, PrintWriter pw) {
 		JSONObject json = new JSONObject();
 		Utils.terribleHackToHaveOrderedJSONObject(json);
 
@@ -61,7 +61,7 @@ public class FactorioJSONMain {
 
 		try (PrintWriter pw = new PrintWriter(
 				new File(outputFolder, "json-recipes-" + baseInfo.getVersion() + ".txt"))) {
-			json_Recipes(table, pw);
+			recipes(table, pw);
 		}
 
 		Desktop.getDesktop().open(outputFolder);
