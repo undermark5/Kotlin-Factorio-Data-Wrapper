@@ -4,3 +4,4 @@
 /mods
 **/.gradle/
 /.idea
+**/build/

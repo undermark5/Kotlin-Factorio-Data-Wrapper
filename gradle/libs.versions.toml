@@ -6,8 +6,16 @@ com-diffplug-durian-durian = "3.4.0"
 com-google-guava-guava = "21.0"
 org-json-json = "20231013"
 org-luaj-luaj-jse = "3.0.1"
+kotlin = "2.0.21"
+kotlinxDatetime = "0.6.1"
+kotlinxSerializationJSON = "1.7.2"
+kotlinxCoroutines = "1.8.1"
 
 [libraries]
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 com-diffplug-durian-durian = { module = "com.diffplug.durian:durian", version.ref = "com-diffplug-durian-durian" }
 com-google-guava-guava = { module = "com.google.guava:guava", version.ref = "com-google-guava-guava" }
 org-json-json = { module = "org.json:json", version.ref = "org-json-json" }
